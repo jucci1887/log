@@ -1,3 +1,3 @@
-module log
+module github.com/kavanahuang/log
 
 go 1.16
