@@ -7,11 +7,11 @@ package log
 
 import (
 	"fmt"
+	"github.com/kavanahuang/log/services"
 	"log"
 	"os"
 	"path/filepath"
 	"runtime"
-	"services"
 	"strings"
 	"sync"
 	"time"
