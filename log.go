@@ -191,24 +191,24 @@ func CloseLogger() {
 }
 
 // 输出格式化日志
-func (f *LogServices) Printf(format string, v ...interface{}) {
+func Printf(format string, v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	fileLog.logChan <- fmt.Sprintf("[%v:%v]", fmt.Sprintf(format, v...)+filepath.Base(file), line)
 }
 
 // 输出格式化日志
-func (f *LogServices) Print(v ...interface{}) {
+func Print(v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	fileLog.logChan <- fmt.Sprintf("[%v:%v]", fmt.Sprint(v...)+filepath.Base(file), line)
 }
 
 // 输出格式化日志
-func (f *LogServices) Println(v ...interface{}) {
+func Println(v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	fileLog.logChan <- fmt.Sprintf("[%v:%v]", filepath.Base(file), line) + fmt.Sprintln(v...)
 }
 
-func (f *LogServices) Fatally(v ...interface{}) {
+func Fatally(v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[ERROR] [")+filepath.Base(file), line) + fmt.Sprintln(v...)
 	_ = log.Output(2, fmt.Sprintln(v))
@@ -216,7 +216,7 @@ func (f *LogServices) Fatally(v ...interface{}) {
 }
 
 // 输出跟踪日志
-func (f *LogServices) Trace(format string, v ...interface{}) {
+func Trace(format string, v ...interface{}) {
 	_, file, line, _ := runtime.Caller(2)
 	if fileLog.logLevel <= TRACE {
 		fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[TRACE] [")+filepath.Base(file), line) + fmt.Sprintf(" "+format, v...)
@@ -224,7 +224,7 @@ func (f *LogServices) Trace(format string, v ...interface{}) {
 }
 
 // 输出信息日志
-func (f *LogServices) Info(format string, v ...interface{}) {
+func Info(format string, v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	s := fmt.Sprintf("%v:%v:%v%v]", fmt.Sprintf("[INFO] [")+filepath.Base(file), line, format, v)
 	fmt.Printf("\033[0;40;32m%s\033[0m\n", s)
@@ -234,7 +234,7 @@ func (f *LogServices) Info(format string, v ...interface{}) {
 }
 
 // 输出警告日志
-func (f *LogServices) Warn(format string, v ...interface{}) {
+func Warn(format string, v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	if fileLog.logLevel <= WARN {
 		fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[WARN] [")+filepath.Base(file), line) + fmt.Sprintf(" "+format, v...)
@@ -242,7 +242,7 @@ func (f *LogServices) Warn(format string, v ...interface{}) {
 }
 
 // 输出错误日志
-func (f *LogServices) Error(format string, v ...interface{}) {
+func Error(format string, v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	if fileLog.logLevel <= ERROR {
 		fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[ERROR] [")+filepath.Base(file), line) + fmt.Sprintf(" "+format, v...)
