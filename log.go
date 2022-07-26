@@ -2,6 +2,7 @@
  Author: Kernel.Huang
  Mail: kernelman79@gmail.com
  Date: 3/18/21 1:01 PM
+ Package: log
 */
 package log
 
@@ -175,7 +176,7 @@ func (f *LogServices) fileMonitor() {
 
 		if f.isMustSplit() {
 			if err := f.split(); err != nil {
-				f.Error("Log split error: %v\n", err)
+				Error("Log split error: %v\n", err)
 			}
 		}
 	}
