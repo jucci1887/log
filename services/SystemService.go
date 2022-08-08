@@ -75,7 +75,6 @@ func GetLogsPrefix() string {
 // 获取日志级别, 值为OFF则关闭日志
 func GetLogsLevel() string {
 	config := GetConfig()
-	log.Println(ConfigService.Get(config).Level())
 	return ConfigService.Get(config).Level()
 }
 
