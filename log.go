@@ -19,11 +19,13 @@ import (
 )
 
 const DateFormat = "2006-01-02"
+const TimeFormat = "2006-01-02 15:04:05"
 
 type LEVEL byte
 
 const (
 	TRACE LEVEL = iota
+	DEBUG
 	INFO
 	WARN
 	ERROR
@@ -74,12 +76,14 @@ func BootLogger() (err error) {
 		f.logLevel = OFF
 	} else if strings.EqualFold(conf.Level, "TRACE") {
 		f.logLevel = TRACE
+	} else if strings.EqualFold(conf.Level, "INFO") {
+		f.logLevel = INFO
 	} else if strings.EqualFold(conf.Level, "WARN") {
 		f.logLevel = WARN
 	} else if strings.EqualFold(conf.Level, "ERROR") {
 		f.logLevel = ERROR
 	} else {
-		f.logLevel = INFO
+		f.logLevel = DEBUG
 	}
 
 	t, _ := time.Parse(DateFormat, time.Now().Format(DateFormat))
@@ -89,6 +93,7 @@ func BootLogger() (err error) {
 		if err = f.split(); err != nil {
 			return
 		}
+
 	} else {
 		f.isExistOrCreate()
 
@@ -115,7 +120,7 @@ func (f *LogServices) isMustSplit() bool {
 	return t.After(*f.date)
 }
 
-// 检查日志文件是否存在，不存在则创建
+// 检查日志文件目录是否存在，不存在则创建
 func (f *LogServices) isExistOrCreate() {
 	_, err := os.Stat(f.fileDir)
 	if err != nil && !os.IsExist(err) {
@@ -211,6 +216,13 @@ func (f *LogServices) Println(v ...interface{}) {
 	fileLog.logChan <- fmt.Sprintf("[%v:%v]", filepath.Base(file), line) + fmt.Sprintln(v...)
 }
 
+func (f *LogServices) Fatal(v ...interface{}) {
+	_, file, line, _ := runtime.Caller(1)
+	fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[ERROR] [")+filepath.Base(file), line) + fmt.Sprintln(v...)
+	_ = log.Output(2, fmt.Sprintln(v))
+	os.Exit(1)
+}
+
 func (f *LogServices) Fatally(v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[ERROR] [")+filepath.Base(file), line) + fmt.Sprintln(v...)
@@ -226,19 +238,30 @@ func (f *LogServices) Trace(format string, v ...interface{}) {
 	}
 }
 
+func (f *LogServices) Debug(format string, v ...interface{}) {
+	_, file, line, _ := runtime.Caller(1)
+	s := fmt.Sprintf("%v:%v:%v%v]", fmt.Sprintf("[DEBUG] [")+filepath.Base(file), line, format, v)
+	fmt.Printf("%s\033[0;40;34m%s\033[0m\n", setNowTime(), s)
+	if fileLog.logLevel <= DEBUG {
+		fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[DEBUG] [")+filepath.Base(file), line) + fmt.Sprintf(" "+format, v...)
+	}
+}
+
 // 输出信息日志
 func (f *LogServices) Info(format string, v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	s := fmt.Sprintf("%v:%v:%v%v]", fmt.Sprintf("[INFO] [")+filepath.Base(file), line, format, v)
-	fmt.Printf("\033[0;40;32m%s\033[0m\n", s)
+	fmt.Printf("%s\033[0;40;32m%s\033[0m\n", setNowTime(), s)
 	if fileLog.logLevel <= INFO {
 		fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[INFO] [")+filepath.Base(file), line) + fmt.Sprintf(" "+format, v...)
 	}
 }
 
 // 输出警告日志
-func (f *LogServices) Warn(format string, v ...interface{}) {
+func (f *LogServices) Warning(format string, v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
+	s := fmt.Sprintf("%v:%v:%v%v]", fmt.Sprintf("[WARN] [")+filepath.Base(file), line, format, v)
+	fmt.Printf("%s\033[0;40;33m%s\033[0m\n", setNowTime(), s)
 	if fileLog.logLevel <= WARN {
 		fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[WARN] [")+filepath.Base(file), line) + fmt.Sprintf(" "+format, v...)
 	}
@@ -247,7 +270,14 @@ func (f *LogServices) Warn(format string, v ...interface{}) {
 // 输出错误日志
 func (f *LogServices) Error(format string, v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
+	s := fmt.Sprintf("%v:%v:%v%v]", fmt.Sprintf("[ERROR] [")+filepath.Base(file), line, format, v)
+	fmt.Printf("%s\033[0;40;31m%s\033[0m\n", setNowTime(), s)
 	if fileLog.logLevel <= ERROR {
 		fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[ERROR] [")+filepath.Base(file), line) + fmt.Sprintf(" "+format, v...)
 	}
+}
+
+// 输出格式化后的当前时间字符串
+func setNowTime() string {
+	return time.Now().Format(TimeFormat)
 }

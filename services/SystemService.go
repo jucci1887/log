@@ -56,7 +56,8 @@ func GetAbsPath(current string) string {
 
 // 获取日志文件名
 func GetLogsFilename() string {
-	return "livestream.log"
+	config := GetConfig()
+	return ConfigService.Get(config).Name()
 }
 
 // 获取日志文件路径
@@ -67,24 +68,15 @@ func GetLogsFilepath() string {
 
 // 获取日志文件内容前缀
 func GetLogsPrefix() string {
-	return ""
+	config := GetConfig()
+	return ConfigService.Get(config).Prefix()
 }
 
 // 获取日志级别, 值为OFF则关闭日志
 func GetLogsLevel() string {
-	return "INFO"
-}
-
-// 获取进程文件路径
-func GetPidPath() string {
-	logsPath := GetLogsDir()
-	return filepath.Join(logsPath, "livestream.pid")
-}
-
-// 获取客户端程序路径
-func GetClientProgramPath() string {
-	dir := GetCurrentDir()
-	return filepath.Join(dir, string(os.PathSeparator), "client")
+	config := GetConfig()
+	log.Println(ConfigService.Get(config).Level())
+	return ConfigService.Get(config).Level()
 }
 
 // 获取配置目录
@@ -94,14 +86,14 @@ func GetConfigDir() string {
 }
 
 // 获取配置文件路径
-func GetForwardConfigPath() string {
+func GetConfigPath() string {
 	configDir := GetConfigDir()
-	return filepath.Join(configDir, "livestream.json")
+	return filepath.Join(configDir, "logs.json")
 }
 
 // 获取配置
-func GetForwardConfig() []byte {
-	confPath := GetForwardConfigPath()
+func GetConfig() []byte {
+	confPath := GetConfigPath()
 	config := FileService.GetFile(confPath)
 	return config.ToByte()
 }
@@ -109,7 +101,16 @@ func GetForwardConfig() []byte {
 // 获取日志目录
 func GetLogsDir() string {
 	rootPath := GetRootPath()
-	return filepath.Join(rootPath, "logs", string(os.PathSeparator))
+	config := GetConfig()
+	content := ConfigService.Get(config)
+	relative := content.Relative()
+	logDir := content.Dir()
+
+	if relative {
+		return filepath.Join(rootPath, logDir, string(os.PathSeparator))
+	}
+
+	return logDir
 }
 
 // 获取路径的上个目录
