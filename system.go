@@ -6,7 +6,6 @@
 package log
 
 import (
-	"github.com/kavanahuang/config"
 	"log"
 	"os"
 	"os/exec"
@@ -76,10 +75,10 @@ func GetConfigPath() string {
 }
 
 // 获取Toml配置解析服务
-func GetToml() *config.TomlConfig {
+func GetToml() *TomlConfig {
 	configDir := GetConfigDir()
 	configPath := GetConfigPath()
-	return config.Toml.NewToml(configDir, configPath)
+	return Toml.NewToml(configDir, configPath)
 }
 
 // 获取日志目录
@@ -107,4 +106,16 @@ func GetRootPath() string {
 	dir := GetCurrentDir()
 	rootPath := GetLastPath(dir)
 	return filepath.Join(rootPath, string(os.PathSeparator))
+}
+
+// Get config dir of custom
+func GetCustomConfigDir(dirname string) string {
+	rootPath := GetRootPath()
+	return filepath.Join(rootPath, dirname, string(os.PathSeparator))
+}
+
+// Get config path
+func GetCustomConfigPath(dirname string, filename string) string {
+	configDir := GetCustomConfigDir(dirname)
+	return filepath.Join(configDir, filename)
 }
