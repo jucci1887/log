@@ -18,7 +18,7 @@ import (
 )
 
 const DateFormat = "2006-01-02"
-const TimeFormat = "2006-01-02 15:04:05"
+const TimeFormat = "2006-01-02 15:04:05"
 
 type LEVEL byte
 
@@ -215,6 +215,7 @@ func (f *Services) Println(v ...interface{}) {
 	fileLog.logChan <- fmt.Sprintf("[%v:%v]", filepath.Base(file), line) + fmt.Sprintln(v...)
 }
 
+// 输出致命错误日志, 并退出系统
 func (f *Services) Fatal(v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[ERROR] [")+filepath.Base(file), line) + fmt.Sprintln(v...)
@@ -222,6 +223,7 @@ func (f *Services) Fatal(v ...interface{}) {
 	os.Exit(1)
 }
 
+// 输出致命错误日志, 并退出系统
 func (f *Services) Fatally(v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	fileLog.logChan <- fmt.Sprintf("%v:%v]", fmt.Sprintf("[ERROR] [")+filepath.Base(file), line) + fmt.Sprintln(v...)
@@ -237,6 +239,7 @@ func (f *Services) Trace(format string, v ...interface{}) {
 	}
 }
 
+// 输出调试日志
 func (f *Services) Debug(format string, v ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	s := fmt.Sprintf("%v:%v:%v%v]", fmt.Sprintf("[DEBUG] [")+filepath.Base(file), line, format, v)
