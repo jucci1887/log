@@ -1,11 +1,17 @@
 # log
 The log system for GoLang.
 
+## Support:
+
+#### 1. Log level color output. 
+#### 2. Log file today split.
+#### 3. Error traceback.
+
 ## Usage:
 
-#### 1 On project add dir for config.
-#### 2 Add logs.toml config file to config dir.
-#### 3 The logs.toml file example.
+#### 1. On project add dir for config.
+#### 2. Add logs.toml config file to config dir.
+#### 3. The logs.toml file example.
 
 ````
 [log]
