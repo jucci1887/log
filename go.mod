@@ -1,4 +1,4 @@
-module github.com/kavanahuang/logs
+module github.com/jucci1887/log
 
 go 1.16
 
